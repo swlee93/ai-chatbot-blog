@@ -13,7 +13,7 @@
 
 <p align="center">
   <a href="#features"><strong>Features</strong></a> ·
-  <a href="#running-locally"><strong>Running locally</strong></a> ·
+  <a href="#setup"><strong>Setup</strong></a> ·
   <a href="#blog-setup-rag"><strong>Blog setup</strong></a>
 </p>
 <br/>
@@ -38,7 +38,7 @@
   - Markdown content ingestion with pgvector + semantic search
   - Smart context loading for blog-related queries
 
-## Running locally
+## Setup
 
 You will need to use the environment variables [defined in `.env.example`](.env.example) to run Next.js AI Chatbot. It's recommended you use [Vercel Environment Variables](https://vercel.com/docs/projects/environment-variables) for this, but a `.env` file is all that is necessary.
 
@@ -57,16 +57,6 @@ The template ships with sample documents under content/ko. Replace these files w
 ### UI message config (YAML)
 
 Greeting and quick-start copy live in [public/ai-chatbot-blog.yaml](public/ai-chatbot-blog.yaml). Edit this file to update the chat welcome text and suggested prompts.
-
-### Fork quickstart (local bootstrap)
-
-1. `pnpm install`
-2. `cp .env.example .env.local` and set `AUTH_SECRET`, `POSTGRES_URL`, `AI_GATEWAY_API_KEY`, `OPENAI_API_KEY` (optional: `BLOB_READ_WRITE_TOKEN`, `REDIS_URL`)
-3. `pnpm db:migrate`
-4. `pnpm dev` (open the app and sign up or use guest login once)
-5. `pnpm rag:sync`
-
-Your app template should now be running on [localhost:3000](http://localhost:3000).
 
 ## Blog setup (RAG)
 

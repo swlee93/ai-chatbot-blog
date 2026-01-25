@@ -16,6 +16,14 @@ CHAT_SUGGESTED_ACTIONS:
   - "What tech stack do you use?"
   - "What are your strengths?"
 
+BRANDING:
+  # Browser tab title
+  title: "AI Chatbot Blog"
+  # Meta description
+  description: "Template for a chat-first portfolio and blog powered by AI."
+  # Favicon path or URL
+  favicon: "/favicon.ico"
+
 DEPLOY_LINK:
   # Optional Vercel integration/deploy URL shown in the header
   url: "https://vercel.com/new/clone?repository-url=https://github.com/swlee93/ai-chatbot-blog"

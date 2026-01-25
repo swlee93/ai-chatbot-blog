@@ -2,17 +2,46 @@ import { AppNav } from "@/components/app-nav";
 import { ThemeProvider } from "@/components/theme-provider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import fs from "node:fs/promises";
+import path from "node:path";
 import { Suspense } from "react";
 import { Toaster } from "sonner";
+import YAML from "yaml";
 
 import { SessionProvider } from "next-auth/react";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://chat.vercel.ai"),
+const DEFAULT_BRANDING = {
   title: "Interview with Sangwoo Lee",
   description: "AI-powered interview chatbot about Sangwoo Lee's blog and experience.",
+  favicon: "/favicon.ico",
 };
+
+async function loadBranding() {
+  try {
+    const configPath = path.join(process.cwd(), "public", "ai-chatbot-blog.yaml");
+    const raw = await fs.readFile(configPath, "utf-8");
+    const parsed = YAML.parse(raw) as {
+      BRANDING?: { title?: string; description?: string; favicon?: string };
+    };
+    return {
+      ...DEFAULT_BRANDING,
+      ...parsed?.BRANDING,
+    };
+  } catch {
+    return DEFAULT_BRANDING;
+  }
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const branding = await loadBranding();
+  return {
+    metadataBase: new URL("https://chat.vercel.ai"),
+    title: branding.title,
+    description: branding.description,
+    icons: branding.favicon ? { icon: branding.favicon } : undefined,
+  };
+}
 
 export const viewport = {
   maximumScale: 1, // Disable auto-zoom on mobile Safari

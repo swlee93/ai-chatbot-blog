@@ -80,6 +80,36 @@ export async function createGuestUser() {
   }
 }
 
+export async function ensureGuestUserExists({
+  id,
+  email,
+}: {
+  id: string;
+  email?: string | null;
+}) {
+  try {
+    const existing = await db
+      .select({ id: user.id })
+      .from(user)
+      .where(eq(user.id, id))
+      .limit(1);
+
+    if (existing.length > 0) {
+      return;
+    }
+
+    const fallbackEmail = email ?? `guest-${Date.now()}`;
+    const password = generateHashedPassword(generateUUID());
+
+    await db.insert(user).values({ id, email: fallbackEmail, password });
+  } catch (_error) {
+    throw new ChatSDKError(
+      "bad_request:database",
+      "Failed to ensure guest user"
+    );
+  }
+}
+
 export async function saveChat({
   id,
   userId,

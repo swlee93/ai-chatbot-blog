@@ -8,15 +8,16 @@ import { requestSuggestions } from "@/lib/ai/tools/request-suggestions";
 import { updateDocument } from "@/lib/ai/tools/update-document";
 import { isProductionEnvironment } from "@/lib/constants";
 import {
-    createStreamId,
-    deleteChatById,
-    getChatById,
-    getMessageCountByUserId,
-    getMessagesByChatId,
-    saveChat,
-    saveMessages,
-    updateChatTitleById,
-    updateMessage,
+  createStreamId,
+  deleteChatById,
+  ensureGuestUserExists,
+  getChatById,
+  getMessageCountByUserId,
+  getMessagesByChatId,
+  saveChat,
+  saveMessages,
+  updateChatTitleById,
+  updateMessage,
 } from "@/lib/db/queries";
 import type { DBMessage } from "@/lib/db/schema";
 import { ChatSDKError } from "@/lib/errors";
@@ -24,17 +25,17 @@ import type { ChatMessage } from "@/lib/types";
 import { convertToUIMessages, generateUUID } from "@/lib/utils";
 import { geolocation } from "@vercel/functions";
 import {
-    convertToModelMessages,
-    createUIMessageStream,
-    JsonToSseTransformStream,
-    smoothStream,
-    stepCountIs,
-    streamText,
+  convertToModelMessages,
+  createUIMessageStream,
+  JsonToSseTransformStream,
+  smoothStream,
+  stepCountIs,
+  streamText,
 } from "ai";
 import { after } from "next/server";
 import {
-    createResumableStreamContext,
-    type ResumableStreamContext,
+  createResumableStreamContext,
+  type ResumableStreamContext,
 } from "resumable-stream";
 import { generateTitleFromUserMessage } from "../../actions";
 import { type PostRequestBody, postRequestBodySchema } from "./schema";
@@ -84,6 +85,13 @@ export async function POST(request: Request) {
     }
 
     const userType: UserType = session.user.type;
+
+    if (userType === "guest") {
+      await ensureGuestUserExists({
+        id: session.user.id,
+        email: session.user.email,
+      });
+    }
 
     const messageCount = await getMessageCountByUserId({
       id: session.user.id,

@@ -13,8 +13,9 @@
 
 <p align="center">
   <a href="#features"><strong>Features</strong></a> ·
-  <a href="#setup"><strong>Setup</strong></a> ·
-  <a href="#blog-setup-rag"><strong>Blog setup</strong></a>
+  <a href="#local-setup"><strong>Local setup</strong></a> ·
+  <a href="#rag-setup"><strong>RAG setup</strong></a> ·
+  <a href="#vercel-deploy"><strong>Vercel deploy</strong></a>
 </p>
 <br/>
 
@@ -38,7 +39,7 @@
   - Markdown content ingestion with pgvector + semantic search
   - Smart context loading for blog-related queries
 
-## Setup
+## Local setup
 
 You will need to use the environment variables [defined in `.env.example`](.env.example) to run Next.js AI Chatbot. It's recommended you use [Vercel Environment Variables](https://vercel.com/docs/projects/environment-variables) for this, but a `.env` file is all that is necessary.
 
@@ -58,7 +59,7 @@ The template ships with sample documents under content/ko. Replace these files w
 
 Greeting and quick-start copy live in [public/ai-chatbot-blog.yaml](public/ai-chatbot-blog.yaml). Edit this file to update the chat welcome text and suggested prompts.
 
-## Blog setup (RAG)
+## RAG setup
 
 ### 1. Apply database migrations
 
@@ -73,4 +74,34 @@ Make sure at least one user exists (sign up or use guest login once), then:
 ```bash
 pnpm run rag:sync
 ```
+
+## Vercel deploy
+
+### Required services
+
+- Postgres with pgvector enabled (Neon or Supabase)
+- Vercel Blob (for uploads)
+- Optional: Vercel AI Gateway (recommended for multi-provider routing)
+
+### Environment variables
+
+Set these in Vercel Project Settings → Environment Variables:
+
+- `AUTH_SECRET` (Auth.js secret)
+- `POSTGRES_URL`
+- `AI_GATEWAY_API_KEY` (required if not using Vercel AI Gateway OIDC)
+- `OPENAI_API_KEY` (required for embeddings / RAG sync)
+- `BLOB_READ_WRITE_TOKEN` (Vercel Blob)
+- `NEXTAUTH_URL` (use your production URL)
+
+Optional:
+
+- `REDIS_URL` (resumable streams)
+
+### Architecture notes
+
+- Database: must support pgvector for semantic search.
+- Auth.js relies on `AUTH_SECRET` and `NEXTAUTH_URL` for session integrity.
+- RAG sync runs via `pnpm rag:sync` and needs `OPENAI_API_KEY`.
+- Blob uploads require `BLOB_READ_WRITE_TOKEN`.
 

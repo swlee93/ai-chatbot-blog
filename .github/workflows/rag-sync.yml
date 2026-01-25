@@ -1,0 +1,83 @@
+name: RAG Sync
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "content/**"
+  workflow_dispatch:
+
+jobs:
+  sync:
+    name: Sync Blog Content to Vector DB
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check content size
+        id: check_size
+        run: |
+          TOTAL_SIZE=$(find content -type f -name "*.md" -exec cat {} \; | wc -c)
+          echo "Content size: $TOTAL_SIZE bytes"
+          echo "size=$TOTAL_SIZE" >> $GITHUB_OUTPUT
+
+          # 200KB = 204800 bytes
+          if [ $TOTAL_SIZE -gt 204800 ]; then
+            echo "needs_rag=true" >> $GITHUB_OUTPUT
+            echo "✅ Content exceeds 200KB - RAG sync needed"
+          else
+            echo "needs_rag=false" >> $GITHUB_OUTPUT
+            echo "⚠️  Content is under 200KB - RAG sync optional"
+          fi
+
+      - name: Run RAG sync
+        if: steps.check_size.outputs.needs_rag == 'true'
+        env:
+          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: pnpm run rag:sync
+
+      - name: Skip RAG sync
+        if: steps.check_size.outputs.needs_rag == 'false'
+        run: |
+          echo "Content size is ${{ steps.check_size.outputs.size }} bytes (< 200KB)"
+          echo "Skipping RAG sync as direct context is more efficient"
+          echo "RAG will be automatically used when content exceeds 200KB"
+
+      - name: Summary
+        run: |
+          echo "## RAG Sync Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Content Size**: ${{ steps.check_size.outputs.size }} bytes" >> $GITHUB_STEP_SUMMARY
+          echo "- **Threshold**: 204800 bytes (200KB)" >> $GITHUB_STEP_SUMMARY
+          echo "- **RAG Needed**: ${{ steps.check_size.outputs.needs_rag }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: ${{ steps.check_size.outputs.needs_rag == 'true' && '✅ Synced' || '⚠️  Skipped' }}" >> $GITHUB_STEP_SUMMARY

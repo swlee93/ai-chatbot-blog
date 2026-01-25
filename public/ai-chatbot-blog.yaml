@@ -1,0 +1,17 @@
+# UI message configuration for ai-chatbot-blog
+# Edit this file to update greeting and quick-start copy.
+
+CHAT_GREETING:
+  # Primary greeting title
+  title: "Hello!"
+  # Short subtitle shown under the title
+  subtitle: "Get a quick overview about me."
+  # CTA text used on the greeting screen
+  cta: "Sign in to start the interview right away."
+
+CHAT_SUGGESTED_ACTIONS:
+  # Suggested prompts shown before the first message
+  - "Tell me about your career and experience"
+  - "What are the key projects you've worked on?"
+  - "What tech stack do you use?"
+  - "What are your strengths?"

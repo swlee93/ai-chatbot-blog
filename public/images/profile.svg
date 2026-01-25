@@ -1,0 +1,330 @@
+<svg
+    viewBox="0 0 400 500"
+    className="w-full h-auto"
+    xmlns="http://www.w3.org/2000/svg"
+>
+    <defs>
+        <pattern
+            id="grid"
+            width="20"
+            height="20"
+            patternUnits="userSpaceOnUse"
+        >
+            <path
+                d="M 20 0 L 0 0 0 20"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="0.5"
+                opacity="0.1"
+            />
+        </pattern>
+        <linearGradient
+            id="bodyGradient"
+            x1="0%"
+            y1="0%"
+            x2="0%"
+            y2="100%"
+        >
+            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.8" />
+            <stop offset="100%" stopColor="#1e40af" stopOpacity="0.9" />
+        </linearGradient>
+        <linearGradient
+            id="glassGradient"
+            x1="0%"
+            y1="0%"
+            x2="0%"
+            y2="100%"
+        >
+            <stop offset="0%" stopColor="#60a5fa" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.1" />
+        </linearGradient>
+    </defs>
+
+    <rect width="400" height="500" fill="url(#grid)" />
+
+    <g opacity="0.3">
+        <circle cx="80" cy="80" r="3" fill="currentColor">
+            <animate
+                attributeName="cy"
+                values="80;85;80"
+                dur="3s"
+                repeatCount="indefinite"
+            />
+        </circle>
+        <circle cx="320" cy="120" r="2.5" fill="currentColor">
+            <animate
+                attributeName="cy"
+                values="120;115;120"
+                dur="2.5s"
+                repeatCount="indefinite"
+            />
+        </circle>
+        <circle cx="60" cy="180" r="2" fill="currentColor">
+            <animate
+                attributeName="cy"
+                values="180;185;180"
+                dur="3.5s"
+                repeatCount="indefinite"
+            />
+        </circle>
+        <circle cx="340" cy="240" r="2.5" fill="currentColor">
+            <animate
+                attributeName="cy"
+                values="240;235;240"
+                dur="3s"
+                repeatCount="indefinite"
+            />
+        </circle>
+    </g>
+
+    <g transform="translate(200, 250)">
+        <path
+            d="M -40 20 L -45 80 L -40 150 L 40 150 L 45 80 L 40 20 Z"
+            fill="url(#bodyGradient)"
+            stroke="currentColor"
+            strokeWidth="2"
+        />
+
+        <g
+            stroke="currentColor"
+            strokeWidth="1.5"
+            fill="none"
+            opacity="0.6"
+        >
+            <path d="M -20 50 L 0 50 L 0 70 M 0 50 L 20 50" />
+            <circle cx="0" cy="50" r="4" fill="currentColor" />
+            <path d="M -15 80 L 15 80 M 0 70 L 0 80" />
+        </g>
+
+        <g
+            fill="url(#bodyGradient)"
+            stroke="currentColor"
+            strokeWidth="2"
+        >
+            <path d="M -40 30 L -70 60 L -75 90 L -65 92 L -60 65 L -38 40 Z" />
+            <path d="M 40 30 L 70 60 L 75 90 L 65 92 L 60 65 L 38 40 Z" />
+        </g>
+
+        <g>
+            <g transform="translate(-70, 85)">
+                <polygon
+                    points="0,-8 8,0 0,8 -8,0"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                />
+                <line
+                    x1="0"
+                    y1="-8"
+                    x2="0"
+                    y2="8"
+                    stroke="currentColor"
+                    strokeWidth="1"
+                />
+                <line
+                    x1="-8"
+                    y1="0"
+                    x2="8"
+                    y2="0"
+                    stroke="currentColor"
+                    strokeWidth="1"
+                />
+            </g>
+
+            <g transform="translate(70, 85)">
+                <circle cx="0" cy="-6" r="2.5" fill="currentColor" />
+                <circle cx="6" cy="3" r="2.5" fill="currentColor" />
+                <circle cx="-6" cy="3" r="2.5" fill="currentColor" />
+                <line
+                    x1="0"
+                    y1="-6"
+                    x2="6"
+                    y2="3"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                />
+                <line
+                    x1="0"
+                    y1="-6"
+                    x2="-6"
+                    y2="3"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                />
+            </g>
+        </g>
+
+        <g transform="translate(0, -30)">
+            <ellipse
+                cx="0"
+                cy="0"
+                rx="35"
+                ry="40"
+                fill="url(#bodyGradient)"
+                stroke="currentColor"
+                strokeWidth="2"
+            />
+
+            <g transform="translate(0, -5)">
+                <rect
+                    x="-25"
+                    y="-8"
+                    width="20"
+                    height="14"
+                    rx="2"
+                    fill="url(#glassGradient)"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                />
+                <rect
+                    x="5"
+                    y="-8"
+                    width="20"
+                    height="14"
+                    rx="2"
+                    fill="url(#glassGradient)"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                />
+                <line
+                    x1="-5"
+                    y1="-1"
+                    x2="5"
+                    y2="-1"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                />
+
+                <rect
+                    x="-23"
+                    y="-6"
+                    width="6"
+                    height="4"
+                    rx="1"
+                    fill="white"
+                    opacity="0.6"
+                />
+                <rect
+                    x="7"
+                    y="-6"
+                    width="6"
+                    height="4"
+                    rx="1"
+                    fill="white"
+                    opacity="0.6"
+                />
+            </g>
+
+            <path
+                d="M -8 12 Q 0 15 8 12"
+                stroke="currentColor"
+                strokeWidth="2"
+                fill="none"
+            />
+        </g>
+
+        <g
+            fill="url(#bodyGradient)"
+            stroke="currentColor"
+            strokeWidth="2"
+        >
+            <path d="M -35 150 L -30 200 L -25 240 L -20 242 L -20 205 L -30 155 Z" />
+            <path d="M 35 150 L 30 200 L 25 240 L 20 242 L 20 205 L 30 155 Z" />
+        </g>
+    </g>
+
+    <g opacity="0.5">
+        <path
+            d="M 100 350 Q 150 340 200 350"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            fill="none"
+            strokeDasharray="5,5"
+        >
+            <animate
+                attributeName="stroke-dashoffset"
+                from="0"
+                to="10"
+                dur="1s"
+                repeatCount="indefinite"
+            />
+        </path>
+        <path
+            d="M 200 350 Q 250 340 300 350"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            fill="none"
+            strokeDasharray="5,5"
+        >
+            <animate
+                attributeName="stroke-dashoffset"
+                from="0"
+                to="10"
+                dur="1s"
+                repeatCount="indefinite"
+            />
+        </path>
+
+        <g transform="translate(100, 400)">
+            <rect
+                x="0"
+                y="0"
+                width="40"
+                height="8"
+                rx="2"
+                fill="currentColor"
+                opacity="0.3"
+            />
+            <rect x="0" y="0" width="30" height="8" rx="2" fill="#3b82f6">
+                <animate
+                    attributeName="width"
+                    values="20;35;20"
+                    dur="2s"
+                    repeatCount="indefinite"
+                />
+            </rect>
+        </g>
+
+        <g transform="translate(260, 400)">
+            <rect
+                x="0"
+                y="0"
+                width="40"
+                height="8"
+                rx="2"
+                fill="currentColor"
+                opacity="0.3"
+            />
+            <rect x="0" y="0" width="25" height="8" rx="2" fill="#3b82f6">
+                <animate
+                    attributeName="width"
+                    values="15;30;15"
+                    dur="2.5s"
+                    repeatCount="indefinite"
+                />
+            </rect>
+        </g>
+    </g>
+
+    <ellipse
+        cx="200"
+        cy="495"
+        rx="80"
+        ry="8"
+        fill="currentColor"
+        opacity="0.1"
+    />
+
+    <text
+        x="200"
+        y="488"
+        fontSize="10"
+        fill="currentColor"
+        opacity="0.8"
+        textAnchor="middle"
+        fontFamily="sans-serif"
+        fontWeight="600"
+    >
+        AI Generated
+    </text>
+</svg>

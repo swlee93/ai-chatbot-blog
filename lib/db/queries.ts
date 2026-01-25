@@ -110,6 +110,36 @@ export async function ensureGuestUserExists({
   }
 }
 
+export async function ensureUserExists({
+  id,
+  email,
+}: {
+  id: string;
+  email?: string | null;
+}) {
+  try {
+    const existing = await db
+      .select({ id: user.id })
+      .from(user)
+      .where(eq(user.id, id))
+      .limit(1);
+
+    if (existing.length > 0) {
+      return;
+    }
+
+    const fallbackEmail = email ?? `user-${Date.now()}`;
+    const password = generateHashedPassword(generateUUID());
+
+    await db.insert(user).values({ id, email: fallbackEmail, password });
+  } catch (_error) {
+    throw new ChatSDKError(
+      "bad_request:database",
+      "Failed to ensure user"
+    );
+  }
+}
+
 export async function saveChat({
   id,
   userId,

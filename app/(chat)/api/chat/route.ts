@@ -10,7 +10,7 @@ import { isProductionEnvironment } from "@/lib/constants";
 import {
   createStreamId,
   deleteChatById,
-  ensureGuestUserExists,
+  ensureUserExists,
   getChatById,
   getMessageCountByUserId,
   getMessagesByChatId,
@@ -86,12 +86,10 @@ export async function POST(request: Request) {
 
     const userType: UserType = session.user.type;
 
-    if (userType === "guest") {
-      await ensureGuestUserExists({
-        id: session.user.id,
-        email: session.user.email,
-      });
-    }
+    await ensureUserExists({
+      id: session.user.id,
+      email: session.user.email,
+    });
 
     const messageCount = await getMessageCountByUserId({
       id: session.user.id,

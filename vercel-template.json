@@ -1,4 +1,31 @@
 {
+  "name": "AI Chatbot Blog Template",
+  "description": "Next.js 16 template for a streaming AI chat UI with Auth.js, PostgreSQL/pgvector, and a markdown-backed blog (RAG-ready).",
+  "framework": "nextjs",
+  "github": "https://github.com/swlee93/ai-chatbot-blog",
+  "demoUrl": "https://me-swlee-projects.vercel.app/",
+  "screenshot": "https://raw.githubusercontent.com/swlee93/ai-chatbot-blog/main/public/images/demo-chat-messages.png",
+  "screenshots": [
+    "https://raw.githubusercontent.com/swlee93/ai-chatbot-blog/main/public/images/demo-chat-messages.png",
+    "https://raw.githubusercontent.com/swlee93/ai-chatbot-blog/main/public/images/demo-chat-history.png",
+    "https://raw.githubusercontent.com/swlee93/ai-chatbot-blog/main/public/images/demo-context-list.png",
+    "https://raw.githubusercontent.com/swlee93/ai-chatbot-blog/main/public/images/demo-context-example.png",
+    "https://raw.githubusercontent.com/swlee93/ai-chatbot-blog/main/public/images/demo-context-private.png"
+  ],
+  "tags": [
+    "ai",
+    "chatbot",
+    "nextjs",
+    "vercel",
+    "postgres",
+    "pgvector",
+    "authjs",
+    "rag",
+    "tailwind"
+  ],
+  "buildCommand": "pnpm build",
+  "installCommand": "pnpm install",
+  "devCommand": "pnpm dev",
   "products": [
     {
       "type": "integration",

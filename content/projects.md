@@ -1,29 +1,29 @@
 ---
-title: "샘플 프로젝트"
-description: "프로젝트 페이지에 표시될 템플릿 콘텐츠"
-tags: ["제품 전략", "데이터 분석", "아키텍처"]
+title: "Sample Projects"
+description: "Template content shown on the projects page"
+tags: ["Product Strategy", "Data Analysis", "Architecture"]
 icon: "FileText"
 order: 99
 ---
 
-# 샘플 프로젝트
+# Sample Projects
 
-## 프로젝트 A: 대화형 분석 도우미
+## Project A: Interactive Analytics Assistant
 
-**문제**: 사용자가 지표를 이해하지 못하고 반복 질문을 남김
+**Problem**: users failed to understand metrics and kept asking repetitive questions
 
-**접근**: RAG 기반 컨텍스트 로딩과 질문 분류 규칙 추가
+**Approach**: add RAG-based context loading and intent classification rules
 
-**결과**: 반복 질문 비율 35% 감소
+**Result**: repeat-question rate reduced by 35%
 
-**한계**: 장문 문서의 청크 품질 개선 필요
+**Limitation**: chunk quality for long documents needs improvement
 
-## 프로젝트 B: 운영 모니터링 자동화
+## Project B: Operations Monitoring Automation
 
-**문제**: 이상 징후 탐지가 늦어 대응 지연 발생
+**Problem**: anomaly detection lagged, delaying response
 
-**접근**: 지표 임계치와 알림 규칙을 표준화
+**Approach**: standardize metric thresholds and alert rules
 
-**결과**: 평균 대응 시간 40% 단축
+**Result**: average response time shortened by 40%
 
-**한계**: 알림 피로도 조절 정책 필요
+**Limitation**: alert fatigue needs a mitigation policy

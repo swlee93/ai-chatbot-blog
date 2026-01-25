@@ -1,29 +1,29 @@
 ---
-title: "템플릿 프로필"
-description: "이 템플릿을 사용하는 팀의 기본 소개와 커스터마이징 가이드"
-tags: ["제품 전략", "아키텍처", "협업"]
+title: "Template Profile"
+description: "Baseline profile and customization guide for teams using this template"
+tags: ["Product Strategy", "Architecture", "Collaboration"]
 icon: "User"
 order: 1
 ---
 
-# 템플릿 프로필
+# Template Profile
 
 ## Overview
 
-이 문서는 템플릿 프로젝트의 기본 소개를 제공한다. 실제 서비스에 맞게 섹션과 내용을 교체하는 용도로 사용한다.
+This document provides a baseline profile for the template project. Replace sections and content to match the real product.
 
 ## Problem Context
 
-초기 템플릿은 구조와 기능 검증에는 유리하지만, 서비스 맥락이 비어 있으면 RAG 기반 질문이 의미 있게 작동하지 않는다. 따라서 최소한의 맥락을 제공할 샘플 콘텐츠가 필요하다.
+Templates are helpful for validating structure and features, but RAG-based answers break down without service context. Sample content is required to establish minimal context.
 
 ## Solution Approach
 
-1. 프로필 섹션에 서비스 목적과 핵심 사용자 정의를 추가한다.
-2. 팀의 역할과 책임을 요약해 AI가 답변의 톤과 범위를 맞추도록 한다.
-3. 민감 정보는 제거하고 공개 가능한 범위만 서술한다.
+1. Add the product purpose and primary user definition to the profile.
+2. Summarize team roles and responsibilities so AI answers match tone and scope.
+3. Remove sensitive information and describe only what can be public.
 
 ## Implementation Details
 
-- content/ 아래의 문서를 실제 서비스 정보로 교체한다.
-- 제목, 요약, 태그는 의미 검색의 기준이 된다.
-- 문서는 짧은 문장으로 구성하고, 핵심 용어를 명시적으로 사용한다.
+- Replace documents under content/ with real product information.
+- Titles, summaries, and tags are used for semantic search.
+- Use short sentences and explicit key terms.

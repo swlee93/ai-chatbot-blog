@@ -1,32 +1,32 @@
 ---
-title: "샘플 경험"
-description: "템플릿용 경력/성과 섹션의 기본 구조"
-tags: ["협업", "아키텍처", "B2B SaaS"]
+title: "Sample Experience"
+description: "Baseline structure for the template's experience and impact section"
+tags: ["Collaboration", "Architecture", "B2B SaaS"]
 icon: "Briefcase"
 order: 2
 ---
 
-# 샘플 경험
+# Sample Experience
 
 ## Overview
 
-이 섹션은 서비스 팀의 주요 경험과 역할을 요약하는 템플릿이다. 실제 프로젝트의 문제, 접근, 결과를 구조적으로 기록한다.
+This section is a template for summarizing a team's core experience and roles. Record problems, approaches, and outcomes in a structured format.
 
 ## Problem Context
 
-프로젝트 경험이 불명확하면 AI가 질문에 대해 모호하게 답변한다. 특히 "왜 이런 선택을 했는가"를 설명할 근거가 부족해진다.
+If project experience is unclear, AI responses become vague. The lack of rationale makes it hard to explain why choices were made.
 
 ## Solution Approach
 
-- 문제 정의 → 접근 방법 → 결과 → 한계 순서로 서술한다.
-- 결과는 가능한 범위에서 정량화한다.
-- 비교 대상이 있는 경우, 동일한 비교 축을 유지한다.
+- Use the order: problem definition → approach → results → limitations.
+- Quantify results when possible.
+- When comparing alternatives, keep a consistent comparison axis.
 
 ## Implementation Details
 
-예시 구조:
+Example structure:
 
-- 문제: 대시보드 로딩 시간이 길어 사용자 이탈이 발생
-- 접근: RSC 적용과 데이터 패칭 병렬화
-- 결과: 평균 로딩 시간 2.4초 → 1.1초
-- 한계: 캐시 전략 개선 필요
+- Problem: dashboard load time caused user drop-off
+- Approach: apply RSC and parallelize data fetching
+- Result: average load time 2.4s → 1.1s
+- Limitation: cache strategy needs improvement

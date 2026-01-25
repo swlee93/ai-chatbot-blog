@@ -6,13 +6,12 @@ Next.js 16 App Router template for a streaming AI chat UI with Auth.js, PostgreS
 
 ## Overview
 
-Chat-first portfolio template with streaming AI responses, markdown-based context, and optional RAG via pgvector.
-Originally based on vercel/ai-chatbot.
+Template for a chat-first portfolio. It starts from vercel/ai-chatbot and adds a markdown-backed knowledge base (Context) that the Interview (Chat) UI uses to ground answers.
 
-- Routes: Chat (/chat), Context (/blog/context), Auth (/login, /register)
-- Data: Markdown in [content/](content/) and RAG sync via pnpm rag:sync
-- Backend: Vercel AI SDK stream in [app/(chat)/api/chat/route.ts](app/(chat)/api/chat/route.ts)
-- Storage: PostgreSQL + Drizzle ORM for chats, messages, references
+- Routes: Interview (/chat), Context (/blog/context), Auth (/login, /register)
+- Data flow: Markdown in [content/](content/) → optional RAG indexing (pnpm rag:sync) → chat responses
+- Runtime: Vercel AI SDK streaming in [app/(chat)/api/chat/route.ts](app/(chat)/api/chat/route.ts)
+- Storage: PostgreSQL + Drizzle ORM for chats, messages, and per-message references
 - Config: UI copy and branding in [public/ai-chatbot-blog.yaml](public/ai-chatbot-blog.yaml)
 
 ## Screenshots

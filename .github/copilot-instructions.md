@@ -640,7 +640,7 @@ Palantir는 이 문제를 단순한 데이터 플랫폼의 확장이 아니라, 
 
 ### Content Management Guidelines
 
-#### Blog Content Structure (`/content/ko`)
+#### Blog Content Structure (`/content`)
 
 포트폴리오 콘텐츠는 RAG(Retrieval Augmented Generation) 시스템의 핵심 지식 베이스입니다. AI가 사용자의 질문에 답할 때 참조할 수 있도록 마크다운 형식으로 작성되며, 벡터 임베딩을 통해 의미 기반 검색이 가능합니다.
 
@@ -759,7 +759,7 @@ order: 1 # 선택: 표시 순서 (숫자가 작을수록 먼저)
 
 ```bash
 # 1. 새 콘텐츠 추가
-# content/ko/ 디렉토리에 마크다운 생성 → Frontmatter 작성 → 콘텐츠 작성 → RAG 동기화
+# content/ 디렉토리에 마크다운 생성 → Frontmatter 작성 → 콘텐츠 작성 → RAG 동기화
 pnpm rag:sync
 
 # 2. 기존 콘텐츠 수정

@@ -12,6 +12,11 @@ type ChatGreeting = {
 type UiMessages = {
   CHAT_GREETING: ChatGreeting;
   CHAT_SUGGESTED_ACTIONS: string[];
+  DEPLOY_LINK: {
+    url: string;
+    label: string;
+    hide: boolean;
+  };
 };
 
 const DEFAULT_MESSAGES: UiMessages = {
@@ -26,6 +31,11 @@ const DEFAULT_MESSAGES: UiMessages = {
     "What tech stack do you use?",
     "What are your strengths?",
   ],
+  DEPLOY_LINK: {
+    url: "",
+    label: "Deploy",
+    hide: false,
+  },
 };
 
 const isValidMessages = (messages: UiMessages | null | undefined) => {
@@ -58,6 +68,10 @@ export const useUiMessages = () => {
             CHAT_GREETING: {
               ...DEFAULT_MESSAGES.CHAT_GREETING,
               ...parsed.CHAT_GREETING,
+            },
+            DEPLOY_LINK: {
+              ...DEFAULT_MESSAGES.DEPLOY_LINK,
+              ...parsed.DEPLOY_LINK,
             },
           });
         }

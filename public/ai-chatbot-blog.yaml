@@ -15,3 +15,11 @@ CHAT_SUGGESTED_ACTIONS:
   - "What are the key projects you've worked on?"
   - "What tech stack do you use?"
   - "What are your strengths?"
+
+DEPLOY_LINK:
+  # Optional Vercel integration/deploy URL shown in the header
+  url: "https://vercel.com/new/clone?repository-url=https://github.com/swlee93/ai-chatbot-blog"
+  # Label text for the subtle header link
+  label: "Deploy"
+  # Set true to hide the deploy link
+  hide: false

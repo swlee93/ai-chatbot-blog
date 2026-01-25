@@ -7,10 +7,9 @@ import path from 'path';
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const type = searchParams.get('type'); // 'list' or specific slug
-  const lang = searchParams.get('lang') || 'ko';
 
   try {
-    const contentDir = path.join(process.cwd(), 'content', lang);
+    const contentDir = path.join(process.cwd(), 'content');
     
     let session = null;
     let isAuthenticated = false;

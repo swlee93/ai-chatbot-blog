@@ -1,5 +1,6 @@
 'use client';
 
+import { useUiMessages } from '@/hooks/use-ui-messages';
 import { cn } from '@/lib/utils';
 import { Database, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
@@ -18,12 +19,13 @@ const navigationItems = [
   },
 ];
 
-export function BlogNav() {
+export function AppNav() {
   const pathname = usePathname();
+  const { DEPLOY_LINK } = useUiMessages();
 
   return (
-    <nav className="group/nav relative z-10 flex h-14 items-center justify-center px-6 opacity-40 transition-opacity duration-300 hover:opacity-100">
-      <div className="flex items-center gap-1 scale-75 transition-transform duration-300 group-hover/nav:scale-100">
+    <nav className="group/nav relative z-10 flex h-14 items-center px-6 opacity-40 transition-opacity duration-300 hover:opacity-100">
+      <div className="mx-auto flex items-center gap-1 scale-75 transition-transform duration-300 group-hover/nav:scale-100">
         {navigationItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
@@ -45,6 +47,18 @@ export function BlogNav() {
           );
         })}
       </div>
+
+      {DEPLOY_LINK.url && !DEPLOY_LINK.hide && (
+        <Link
+          href={DEPLOY_LINK.url}
+          className="absolute right-6 text-xs text-muted-foreground/70 transition-colors hover:text-muted-foreground"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Open deployment"
+        >
+          {DEPLOY_LINK.label}
+        </Link>
+      )}
     </nav>
   );
 }

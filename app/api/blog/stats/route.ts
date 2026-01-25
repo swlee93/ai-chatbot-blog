@@ -1,5 +1,5 @@
 import { blogReference } from '@/lib/db/schema';
-import { count, eq, sql } from 'drizzle-orm';
+import { count, sql } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import { unstable_noStore as noStore } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
@@ -13,10 +13,7 @@ export async function GET(request: NextRequest) {
   noStore(); // Prevent static optimization for dynamic data
   
   try {
-    const searchParams = request.nextUrl.searchParams;
-    const lang = searchParams.get('lang') || 'ko';
-
-    console.log('📊 Fetching stats for language:', lang);
+    console.log('📊 Fetching stats for content');
 
     // Get reference count per file path only (not per section)
     const stats = await db
@@ -25,7 +22,6 @@ export async function GET(request: NextRequest) {
         hitCount: count(blogReference.id),
       })
       .from(blogReference)
-      .where(eq(blogReference.language, lang))
       .groupBy(blogReference.filePath)
       .orderBy(sql`count(${blogReference.id}) DESC`);
 

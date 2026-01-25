@@ -3,8 +3,8 @@
 import { BackButton } from "@/components/back-button";
 import { BlogMarkdown } from "@/components/blog-markdown";
 import {
-  MobileTableOfContents,
-  TableOfContents,
+    MobileTableOfContents,
+    TableOfContents,
 } from "@/components/table-of-contents";
 import { extractHeadings } from "@/lib/blog/headings";
 import Link from "next/link";
@@ -29,7 +29,7 @@ export default function ContextDetailPage() {
       setError("");
       setErrorType(null);
       try {
-        const response = await fetch(`/api/blog?type=${slug}&lang=ko`);
+        const response = await fetch(`/api/blog?type=${slug}`);
 
         if (response.status === 404) {
           const data = await response.json();

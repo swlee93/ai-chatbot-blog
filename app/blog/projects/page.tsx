@@ -13,7 +13,7 @@ export default function ProjectsPage() {
     async function loadContent() {
       setIsLoading(true);
       try {
-        const response = await fetch('/api/blog?type=projects&lang=ko');
+        const response = await fetch('/api/blog?type=projects');
         const data = await response.json();
         setContent(data.content);
       } catch (error) {

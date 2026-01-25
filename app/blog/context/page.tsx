@@ -1,11 +1,11 @@
 'use client';
 
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from '@/components/ui/select';
 import { Briefcase, Code, FileText, Lightbulb, Lock, LogOut, Search, ThumbsUp, User, X } from 'lucide-react';
 import Link from 'next/link';
@@ -69,8 +69,8 @@ export default function ContextPage() {
     async function loadContextItems() {
       try {
         const [itemsResponse, statsResponse] = await Promise.all([
-          fetch('/api/blog?type=list&lang=ko'),
-          fetch('/api/blog/stats?lang=ko'),
+          fetch('/api/blog?type=list'),
+          fetch('/api/blog/stats'),
         ]);
         
         const data = await itemsResponse.json();
@@ -93,7 +93,7 @@ export default function ContextPage() {
         console.log('📊 Client - Items:', data.items.map((i: ContextItem) => i.id));
         
         statsData?.stats?.forEach((stat: FileStats) => {
-          // Extract filename: "content/ko/profile.md" -> "profile"
+          // Extract filename: "content/profile.md" -> "profile"
           const fileName = stat.filePath.split('/').pop()?.replace('.md', '') || '';
           console.log(`📊 Mapping: ${stat.filePath} -> ${fileName} (${stat.hitCount} hits)`);
           statsMap.set(fileName, (statsMap.get(fileName) || 0) + stat.hitCount);

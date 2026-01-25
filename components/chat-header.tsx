@@ -8,6 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useUiMessages } from "@/hooks/use-ui-messages";
 import { guestRegex } from "@/lib/constants";
 import { ChevronDown } from "lucide-react";
 import type { Session } from "next-auth";
@@ -34,6 +35,7 @@ function PureChatHeader({
   const router = useRouter();
   const { data, status } = useSession();
   const { setTheme, resolvedTheme } = useTheme();
+  const { DEPLOY_LINK } = useUiMessages();
 
   const isGuestUser = !user || guestRegex.test(user?.email ?? "");
 
@@ -133,6 +135,18 @@ function PureChatHeader({
           >
             Sign In
           </Button>
+        )}
+
+        {DEPLOY_LINK.url && (
+          <Link
+            href={DEPLOY_LINK.url}
+            className="ml-1 text-xs text-muted-foreground/70 transition-colors hover:text-muted-foreground"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Open deployment"
+          >
+            {DEPLOY_LINK.label}
+          </Link>
         )}
       </div>
     </header>

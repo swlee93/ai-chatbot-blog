@@ -2,6 +2,8 @@
 
 Next.js 16 App Router template for a streaming AI chat UI with Auth.js, PostgreSQL (pgvector), and a markdown-backed blog context.
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/swlee93/ai-chatbot-blog)
+
 ## Overview
 
 - Chat UI with streaming responses

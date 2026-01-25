@@ -8,15 +8,15 @@ import { requestSuggestions } from "@/lib/ai/tools/request-suggestions";
 import { updateDocument } from "@/lib/ai/tools/update-document";
 import { isProductionEnvironment } from "@/lib/constants";
 import {
-  createStreamId,
-  deleteChatById,
-  getChatById,
-  getMessageCountByUserId,
-  getMessagesByChatId,
-  saveChat,
-  saveMessages,
-  updateChatTitleById,
-  updateMessage,
+    createStreamId,
+    deleteChatById,
+    getChatById,
+    getMessageCountByUserId,
+    getMessagesByChatId,
+    saveChat,
+    saveMessages,
+    updateChatTitleById,
+    updateMessage,
 } from "@/lib/db/queries";
 import type { DBMessage } from "@/lib/db/schema";
 import { ChatSDKError } from "@/lib/errors";
@@ -24,17 +24,17 @@ import type { ChatMessage } from "@/lib/types";
 import { convertToUIMessages, generateUUID } from "@/lib/utils";
 import { geolocation } from "@vercel/functions";
 import {
-  convertToModelMessages,
-  createUIMessageStream,
-  JsonToSseTransformStream,
-  smoothStream,
-  stepCountIs,
-  streamText,
+    convertToModelMessages,
+    createUIMessageStream,
+    JsonToSseTransformStream,
+    smoothStream,
+    stepCountIs,
+    streamText,
 } from "ai";
 import { after } from "next/server";
 import {
-  createResumableStreamContext,
-  type ResumableStreamContext,
+    createResumableStreamContext,
+    type ResumableStreamContext,
 } from "resumable-stream";
 import { generateTitleFromUserMessage } from "../../actions";
 import { type PostRequestBody, postRequestBodySchema } from "./schema";
@@ -284,20 +284,13 @@ export async function POST(request: Request) {
         // Save blog references for assistant messages
         if (blogSources && blogSources.length > 0) {
           const { saveBlogReferences } = await import('@/lib/db/queries');
-          const { detectLanguage } = await import('@/lib/blog/content');
           
           // Find assistant message from finished messages
           const assistantMessage = finishedMessages.find(m => m.role === 'assistant');
           if (assistantMessage) {
-            const userMessage = message?.parts.find(p => p.type === 'text');
-            const language = userMessage && 'text' in userMessage 
-              ? detectLanguage(userMessage.text) 
-              : 'ko';
-            
             console.log('💾 Saving blog references:', {
               messageId: assistantMessage.id,
               chatId: id,
-              language,
               sourcesCount: blogSources.length,
               sources: blogSources,
             });
@@ -306,7 +299,6 @@ export async function POST(request: Request) {
               messageId: assistantMessage.id,
               chatId: id,
               sources: blogSources,
-              language,
             });
             
             console.log(`✅ Saved ${blogSources.length} blog references for message ${assistantMessage.id}`);

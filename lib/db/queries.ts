@@ -19,12 +19,12 @@ import postgres from "postgres";
 import { ChatSDKError } from "../errors";
 import { generateUUID } from "../utils";
 import {
+    blogReference,
     type Chat,
     chat,
     type DBMessage,
     document,
     message,
-    blogReference,
     stream,
     type Suggestion,
     suggestion,
@@ -613,12 +613,10 @@ export async function saveBlogReferences({
   messageId,
   chatId,
   sources,
-  language,
 }: {
   messageId: string;
   chatId: string;
   sources: Array<{filePath: string; title?: string; section?: string}>;
-  language: string;
 }) {
   try {
     const references = sources.map(source => ({
@@ -627,7 +625,6 @@ export async function saveBlogReferences({
       chatId,
       filePath: source.filePath,
       title: source.title,
-      language,
       createdAt: new Date(),
     }));
     

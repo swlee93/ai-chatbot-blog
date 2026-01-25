@@ -97,7 +97,7 @@ This document provides a comprehensive overview of the project structure for Git
 - `utils.ts`: Common utility functions
 - `constants.ts`: Application constants
 - `errors.ts`: Error handling utilities
-- `language-context.tsx`: Internationalization context
+ 
 
 ### 3. Components (`/components`)
 
@@ -151,7 +151,7 @@ AI-generated content handlers:
 
 Blog content in Markdown:
 
-- `ko/`: Korean language content
+ 
   - Project descriptions
   - About information
   - Skills and experience

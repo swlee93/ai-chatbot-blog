@@ -4,7 +4,6 @@ CREATE TABLE IF NOT EXISTS "BlogReference" (
 	"chatId" uuid NOT NULL,
 	"filePath" text NOT NULL,
 	"title" text,
-	"language" varchar(10) DEFAULT 'ko' NOT NULL,
 	"createdAt" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint

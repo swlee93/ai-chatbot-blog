@@ -15,18 +15,18 @@ import { config } from 'dotenv';
 import { eq, sql } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
-import { blogChunk, user } from '../lib/db/schema';
 import {
-    estimateTokens,
-    formatSize,
-    loadBlogContent,
-    shouldUseRAG,
+  estimateTokens,
+  formatSize,
+  loadBlogContent,
+  shouldUseRAG,
 } from '../lib/blog/content';
 import {
-    chunkBlogContent,
-    generateEmbeddings,
-    getChunkStats,
+  chunkBlogContent,
+  generateEmbeddings,
+  getChunkStats,
 } from '../lib/blog/embeddings';
+import { blogChunk, user } from '../lib/db/schema';
 
 // Load environment variables
 config({ path: '.env.local' });
@@ -47,17 +47,22 @@ async function main() {
     userId = userIdArg.split('=')[1];
     console.log(`📌 Using provided user ID: ${userId}`);
   } else {
-    // Get the first user from the database
+    // Get the first user from the database (or create a system user)
     console.log('🔍 Finding blog owner user...');
     const users = await db.select().from(user).limit(1);
-    
+
     if (users.length === 0) {
-      console.error('❌ No users found in database. Please create a user first.');
-      process.exit(1);
+      console.log('ℹ️  No users found. Creating a system user for RAG sync...');
+      const created = await db
+        .insert(user)
+        .values({ email: 'system@local', password: null })
+        .returning({ id: user.id, email: user.email });
+      userId = created[0].id;
+      console.log(`✅ Created system user: ${userId} (${created[0].email})`);
+    } else {
+      userId = users[0].id;
+      console.log(`✅ Using first user: ${userId} (${users[0].email})`);
     }
-    
-    userId = users[0].id;
-    console.log(`✅ Using first user: ${userId} (${users[0].email})`);
   }
 
   // Load blog content

@@ -10,53 +10,20 @@ export interface BlogContent {
   totalSize: number;
 }
 
-export type Language = 'ko' | 'en';
-
-/**
- * Detect language from user query or default to Korean
- */
-export function detectLanguage(query?: string): Language {
-  if (!query) return 'ko';
-  
-  const lowerQuery = query.toLowerCase();
-  
-  // Check for explicit language requests
-  if (lowerQuery.includes('in english') || lowerQuery.includes('english please')) {
-    return 'en';
-  }
-  
-  if (lowerQuery.includes('korean') || lowerQuery.includes('hangul')) {
-    return 'ko';
-  }
-  
-  // Check if query is primarily in English (simple heuristic)
-  const englishChars = (query.match(/[a-zA-Z]/g) || []).length;
-  const koreanChars = (query.match(/[\uac00-\ud7a3]/g) || []).length;
-  
-  // If English characters dominate, use English
-  if (englishChars > koreanChars && englishChars > query.length * 0.3) {
-    return 'en';
-  }
-  
-  return 'ko'; // Default to Korean
-}
-
 /**
  * Load all blog markdown content from the content directory
  */
-export async function loadBlogContent(language: Language = 'ko'): Promise<BlogContent> {
+export async function loadBlogContent(): Promise<BlogContent> {
   try {
-    const langDir = path.join(CONTENT_DIR, language);
-    
     // Read all markdown files in the directory
-    const files = await fs.readdir(langDir);
+    const files = await fs.readdir(CONTENT_DIR);
     const mdFiles = files.filter(file => file.endsWith('.md'));
     
     const fileContents: { [key: string]: string } = {};
     let combined = '';
     
     for (const file of mdFiles) {
-      const content = await fs.readFile(path.join(langDir, file), 'utf-8');
+      const content = await fs.readFile(path.join(CONTENT_DIR, file), 'utf-8');
       const fileName = file.replace('.md', '');
       fileContents[fileName] = content;
       combined += `\n\n---\n\n${content}`;
@@ -70,11 +37,7 @@ export async function loadBlogContent(language: Language = 'ko'): Promise<BlogCo
       totalSize,
     };
   } catch (error) {
-    console.error(`Error loading blog content for language ${language}:`, error);
-    // Fallback to default language or empty content
-    if (language !== 'ko') {
-      return loadBlogContent('ko');
-    }
+    console.error('Error loading blog content:', error);
     return {
       combined: '# Blog\n\nContent coming soon...',
       files: {},

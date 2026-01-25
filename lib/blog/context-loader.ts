@@ -1,13 +1,12 @@
 import {
-  buildBlogPrompt,
-  detectLanguage,
-  loadBlogContent,
-  shouldUseRAG,
+    buildBlogPrompt,
+    loadBlogContent,
+    shouldUseRAG,
 } from './content';
 import {
-  buildContextFromSearchResults,
-  isRAGAvailable,
-  semanticSearch,
+    buildContextFromSearchResults,
+    isRAGAvailable,
+    semanticSearch,
 } from './semantic-search';
 
 type BlogSource = {
@@ -18,7 +17,7 @@ type BlogSource = {
 
 /**
  * Smart context loader that decides whether to use full context or RAG
- * based on content size and availability. Also detects language from query.
+ * based on content size and availability.
  *
  * @returns Object containing context string and source files used
  */
@@ -28,12 +27,8 @@ export async function getSmartContext(
   console.time('blog-context-load');
 
   try {
-    // Detect language from user query
-    const language = detectLanguage(userQuery);
-    console.log(`🌐 Detected language: ${language}`);
-
-    // Load blog content in the detected language
-    const content = await loadBlogContent(language);
+    // Load blog content
+    const content = await loadBlogContent();
 
     // Check if content should use RAG
     const needsRAG = shouldUseRAG(content);

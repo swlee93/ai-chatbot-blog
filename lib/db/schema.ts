@@ -202,7 +202,6 @@ export const blogReference = pgTable("BlogReference", {
     .references(() => chat.id),
   filePath: text("filePath").notNull(),
   title: text("title"),
-  language: varchar("language", { length: 10 }).notNull().default("ko"),
   createdAt: timestamp("createdAt").notNull().defaultNow(),
 });
 

@@ -3,34 +3,34 @@ import "server-only";
 import type { ArtifactKind } from "@/components/artifact";
 import type { VisibilityType } from "@/components/visibility-selector";
 import {
-    and,
-    asc,
-    count,
-    desc,
-    eq,
-    gt,
-    gte,
-    inArray,
-    lt,
-    type SQL,
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  gt,
+  gte,
+  inArray,
+  lt,
+  type SQL,
 } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { ChatSDKError } from "../errors";
 import { generateUUID } from "../utils";
 import {
-    blogReference,
-    type Chat,
-    chat,
-    type DBMessage,
-    document,
-    message,
-    stream,
-    type Suggestion,
-    suggestion,
-    type User,
-    user,
-    vote,
+  blogReference,
+  type Chat,
+  chat,
+  type DBMessage,
+  document,
+  message,
+  stream,
+  type Suggestion,
+  suggestion,
+  type User,
+  user,
+  vote,
 } from "./schema";
 import { generateHashedPassword } from "./utils";
 

@@ -31,3 +31,9 @@ DEPLOY_LINK:
   label: "Deploy"
   # Set true to hide the deploy link
   hide: false
+
+BLOG_CONFIG:
+  # Blog content directory (relative to project root unless absolute)
+  contentDir: "content"
+  # RAG threshold in KB (content size above this enables RAG)
+  sizeThresholdKB: 200

@@ -1,8 +1,49 @@
 import fs from 'fs/promises';
+import { readFileSync } from 'node:fs';
 import path from 'path';
+import YAML from 'yaml';
 
-const CONTENT_DIR = path.join(process.cwd(), 'content');
-const SIZE_THRESHOLD = 50 * 1024; // 50KB in bytes - lowered to use RAG more often
+const DEFAULT_BLOG_CONFIG = {
+  contentDir: 'content',
+  sizeThresholdKB: 200,
+};
+
+let cachedBlogConfig: typeof DEFAULT_BLOG_CONFIG | null = null;
+
+function loadBlogConfigSync() {
+  if (cachedBlogConfig) {
+    return cachedBlogConfig;
+  }
+
+  try {
+    const configPath = path.join(process.cwd(), 'public', 'ai-chatbot-blog.yaml');
+    const raw = readFileSync(configPath, 'utf-8');
+    const parsed = YAML.parse(raw) as {
+      BLOG_CONFIG?: {
+        contentDir?: string;
+        sizeThresholdKB?: number;
+        sizeThresholdBytes?: number;
+      };
+    };
+
+    const contentDir = parsed?.BLOG_CONFIG?.contentDir?.trim() || DEFAULT_BLOG_CONFIG.contentDir;
+    const sizeThresholdKB =
+      typeof parsed?.BLOG_CONFIG?.sizeThresholdKB === 'number'
+        ? parsed.BLOG_CONFIG.sizeThresholdKB
+        : typeof parsed?.BLOG_CONFIG?.sizeThresholdBytes === 'number'
+            ? Math.ceil(parsed.BLOG_CONFIG.sizeThresholdBytes / 1024)
+            : DEFAULT_BLOG_CONFIG.sizeThresholdKB;
+
+    cachedBlogConfig = {
+      contentDir,
+      sizeThresholdKB,
+    };
+    return cachedBlogConfig;
+  } catch {
+    cachedBlogConfig = DEFAULT_BLOG_CONFIG;
+    return cachedBlogConfig;
+  }
+}
 
 export interface BlogContent {
   combined: string; // All content combined
@@ -15,15 +56,20 @@ export interface BlogContent {
  */
 export async function loadBlogContent(): Promise<BlogContent> {
   try {
+    const blogConfig = loadBlogConfigSync();
+    const contentDirPath = path.isAbsolute(blogConfig.contentDir)
+      ? blogConfig.contentDir
+      : path.join(process.cwd(), blogConfig.contentDir);
+
     // Read all markdown files in the directory
-    const files = await fs.readdir(CONTENT_DIR);
+    const files = await fs.readdir(contentDirPath);
     const mdFiles = files.filter(file => file.endsWith('.md'));
     
     const fileContents: { [key: string]: string } = {};
     let combined = '';
     
     for (const file of mdFiles) {
-      const content = await fs.readFile(path.join(CONTENT_DIR, file), 'utf-8');
+      const content = await fs.readFile(path.join(contentDirPath, file), 'utf-8');
       const fileName = file.replace('.md', '');
       fileContents[fileName] = content;
       combined += `\n\n---\n\n${content}`;
@@ -50,7 +96,8 @@ export async function loadBlogContent(): Promise<BlogContent> {
  * Check if content size exceeds RAG threshold
  */
 export function shouldUseRAG(content: BlogContent): boolean {
-  return content.totalSize > SIZE_THRESHOLD;
+  const blogConfig = loadBlogConfigSync();
+  return content.totalSize > blogConfig.sizeThresholdKB * 1024;
 }
 
 /**

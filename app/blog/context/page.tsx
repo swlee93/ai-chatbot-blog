@@ -1,11 +1,11 @@
 'use client';
 
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import { Briefcase, Code, FileText, Lightbulb, Lock, LogOut, Search, ThumbsUp, User, X } from 'lucide-react';
 import Link from 'next/link';

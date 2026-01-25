@@ -1,12 +1,12 @@
 import {
-    buildBlogPrompt,
-    loadBlogContent,
-    shouldUseRAG,
+  buildBlogPrompt,
+  loadBlogContent,
+  shouldUseRAG,
 } from './content';
 import {
-    buildContextFromSearchResults,
-    isRAGAvailable,
-    semanticSearch,
+  buildContextFromSearchResults,
+  isRAGAvailable,
+  semanticSearch,
 } from './semantic-search';
 
 type BlogSource = {

@@ -10,6 +10,14 @@ Next.js 16 App Router template for a streaming AI chat UI with Auth.js, PostgreS
 - RAG sync via `pnpm rag:sync`
 - UI copy and deploy link configured in YAML
 
+## Screenshots
+
+![Chat messages](public/images/demo-chat-messages.png)
+![Chat history](public/images/demo-chat-history.png)
+![Context list](public/images/demo-context-list.png)
+![Context example](public/images/demo-context-example.png)
+![Private context](public/images/demo-context-private.png)
+
 ## Local setup
 
 1. Install dependencies

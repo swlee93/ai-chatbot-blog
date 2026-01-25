@@ -4,7 +4,7 @@ description: "Validation of Vector RAG cost savings and response quality compari
 tags: ["AI", "Architecture"]
 icon: "FlaskConical"
 order: 11
-private: false
+private: true
 ---
 
 # RAG Experiments and Quality Validation

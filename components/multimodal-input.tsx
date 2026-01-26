@@ -11,6 +11,7 @@ import {
     ModelSelectorName,
     ModelSelectorTrigger,
 } from "@/components/ai-elements/model-selector";
+import { useUiMessages } from "@/hooks/use-ui-messages";
 import {
     chatModels,
     DEFAULT_CHAT_MODEL,
@@ -88,6 +89,11 @@ function PureMultimodalInput({
   onModelChange?: (modelId: string) => void;
   isReadonly?: boolean;
 }) {
+  const { UI_SETTINGS } = useUiMessages();
+  const modelSelectorEnabledInProduction =
+    UI_SETTINGS?.modelSelector?.enabledInProduction ?? false;
+  const shouldShowModelSelector =
+    process.env.NODE_ENV !== "production" || modelSelectorEnabledInProduction;
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
 
@@ -387,7 +393,7 @@ function PureMultimodalInput({
               selectedModelId={selectedModelId}
               status={status}
             />
-            {process.env.NODE_ENV === 'development' && (
+            {shouldShowModelSelector && (
               <ModelSelectorCompact
                 onModelChange={onModelChange}
                 selectedModelId={selectedModelId}

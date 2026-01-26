@@ -32,6 +32,11 @@ DEPLOY_LINK:
   # Set true to hide the deploy link
   hide: false
 
+UI_SETTINGS:
+  modelSelector:
+    # Allow model selection UI in production
+    enabledInProduction: false
+
 BLOG_CONFIG:
   # Blog content directory (relative to project root unless absolute)
   contentDir: "content"
@@ -41,10 +46,11 @@ BLOG_CONFIG:
   ragTopK: 8
 
 RESPONSE_CONFIG:
-  # Minimum tokens for assistant answers (soft constraint via prompt)
-  minTokens: 120
-  # Maximum tokens for assistant answers (hard constraint via model)
-  maxTokens: 600
+  # Sentence-length guidance (soft constraint via prompt)
+  simpleSentencesMin: 3
+  simpleSentencesMax: 5
+  complexSentencesMin: 8
+  complexSentencesMax: 12
 
 PROMPTS:
   # System prompt for blog context

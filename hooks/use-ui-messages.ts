@@ -17,6 +17,11 @@ type UiMessages = {
     label: string;
     hide: boolean;
   };
+  UI_SETTINGS?: {
+    modelSelector?: {
+      enabledInProduction?: boolean;
+    };
+  };
 };
 
 const DEFAULT_MESSAGES: UiMessages = {
@@ -35,6 +40,11 @@ const DEFAULT_MESSAGES: UiMessages = {
     url: "",
     label: "Deploy",
     hide: false,
+  },
+  UI_SETTINGS: {
+    modelSelector: {
+      enabledInProduction: false,
+    },
   },
 };
 

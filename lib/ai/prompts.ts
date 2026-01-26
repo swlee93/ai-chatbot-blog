@@ -108,8 +108,10 @@ type PromptConfig = {
 };
 
 type ResponseConfig = {
-  minTokens?: number;
-  maxTokens?: number;
+  simpleSentencesMin?: number;
+  simpleSentencesMax?: number;
+  complexSentencesMin?: number;
+  complexSentencesMax?: number;
 };
 
 let cachedPromptConfig: PromptConfig | null = null;
@@ -142,14 +144,16 @@ export const artifactsPrompt =
   promptConfig.artifactsPrompt || defaultArtifactsPrompt;
 export const regularPrompt = promptConfig.regularPrompt || defaultRegularPrompt;
 
-export const getResponseTokenLimits = () => {
+export const getResponseLengthGuidelines = () => {
   if (!cachedResponseConfig) {
     loadPromptConfigSync();
   }
 
   return {
-    minTokens: cachedResponseConfig?.minTokens,
-    maxTokens: cachedResponseConfig?.maxTokens,
+    simpleSentencesMin: cachedResponseConfig?.simpleSentencesMin,
+    simpleSentencesMax: cachedResponseConfig?.simpleSentencesMax,
+    complexSentencesMin: cachedResponseConfig?.complexSentencesMin,
+    complexSentencesMax: cachedResponseConfig?.complexSentencesMax,
   };
 };
 
@@ -178,18 +182,22 @@ export const systemPrompt = ({
   blogContext?: string;
 }) => {
   const requestPrompt = getRequestPromptFromHints(requestHints);
-  const { minTokens, maxTokens } = getResponseTokenLimits();
+  const {
+    simpleSentencesMin,
+    simpleSentencesMax,
+    complexSentencesMin,
+    complexSentencesMax,
+  } = getResponseLengthGuidelines();
   const lengthGuidance =
-    minTokens || maxTokens
-      ? `\n\n## Response Length Guidelines\n${
-          minTokens
-            ? `- Aim for at least ${minTokens} tokens for adequate depth.\n`
-            : ""
-        }${
-          maxTokens
-            ? `- Do not exceed ${maxTokens} tokens unless explicitly asked.\n`
-            : ""
-        }`
+    typeof simpleSentencesMin === "number" ||
+    typeof simpleSentencesMax === "number" ||
+    typeof complexSentencesMin === "number" ||
+    typeof complexSentencesMax === "number"
+      ? `\n\n## Response Length Guidelines (sentences)\n- simple queries: ${
+          simpleSentencesMin ?? "3"
+        }-${simpleSentencesMax ?? "5"}\n- complex queries: ${
+          complexSentencesMin ?? "8"
+        }-${complexSentencesMax ?? "12"}`
       : "";
   
   // Build the full system prompt with blog context

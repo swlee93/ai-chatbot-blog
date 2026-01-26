@@ -51,6 +51,23 @@ export interface BlogContent {
   totalSize: number;
 }
 
+async function collectMarkdownFiles(dir: string): Promise<string[]> {
+  const entries = await fs.readdir(dir, { withFileTypes: true });
+  const files = await Promise.all(
+    entries.map(async (entry) => {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        return collectMarkdownFiles(fullPath);
+      }
+      if (entry.isFile() && entry.name.endsWith('.md')) {
+        return [fullPath];
+      }
+      return [];
+    })
+  );
+  return files.flat();
+}
+
 /**
  * Load all blog markdown content from the content directory
  */
@@ -61,16 +78,18 @@ export async function loadBlogContent(): Promise<BlogContent> {
       ? blogConfig.contentDir
       : path.join(process.cwd(), blogConfig.contentDir);
 
-    // Read all markdown files in the directory
-    const files = await fs.readdir(contentDirPath);
-    const mdFiles = files.filter(file => file.endsWith('.md'));
+    // Read all markdown files in the directory (recursive)
+    const mdFiles = (await collectMarkdownFiles(contentDirPath)).sort();
     
     const fileContents: { [key: string]: string } = {};
     let combined = '';
     
-    for (const file of mdFiles) {
-      const content = await fs.readFile(path.join(contentDirPath, file), 'utf-8');
-      const fileName = file.replace('.md', '');
+    for (const filePath of mdFiles) {
+      const content = await fs.readFile(filePath, 'utf-8');
+      const relativePath = path
+        .relative(contentDirPath, filePath)
+        .replace(/\.md$/, '');
+      const fileName = relativePath.split(path.sep).join('/');
       fileContents[fileName] = content;
       combined += `\n\n---\n\n${content}`;
     }

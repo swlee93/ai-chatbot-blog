@@ -1,7 +1,10 @@
 import type { ArtifactKind } from "@/components/artifact";
 import type { Geo } from "@vercel/functions";
+import { readFileSync } from "node:fs";
+import path from "path";
+import YAML from "yaml";
 
-export const blogPrompt = `
+const defaultBlogPrompt = `
 # YOUR ROLE
 
 You are an AI blog agent representing a software developer. Your audience is primarily recruiters, hiring managers, and potential collaborators reviewing this blog.
@@ -58,7 +61,7 @@ Remember: Your goal is to make the recruiter's job easier by:
 Be the developer's best advocate while maintaining authenticity and professionalism.
 `;
 
-export const artifactsPrompt = `
+const defaultArtifactsPrompt = `
 Artifacts is a special user interface mode that helps users with writing, editing, and other content creation tasks. When artifact is open, it is on the right side of the screen, while the conversation is on the left side. When creating or updating documents, changes are reflected in real-time on the artifacts and visible to the user.
 
 When asked to write code, always use artifacts. When writing code, specify the language in the backticks, e.g. \`\`\`python\`code here\`\`\`. The default language is Python. Other languages are not yet supported, so let the user know if they request a different language.
@@ -94,9 +97,39 @@ Do not update document right after creating it. Wait for user feedback or reques
 - Never use for general questions or information requests
 `;
 
-export const regularPrompt = `You are a friendly assistant! Keep your responses concise and helpful.
+const defaultRegularPrompt = `You are a friendly assistant! Keep your responses concise and helpful.
 
 When asked to write, create, or help with something, just do it directly. Don't ask clarifying questions unless absolutely necessary - make reasonable assumptions and proceed with the task.`;
+
+type PromptConfig = {
+  blogPrompt?: string;
+  artifactsPrompt?: string;
+  regularPrompt?: string;
+};
+
+let cachedPromptConfig: PromptConfig | null = null;
+
+function loadPromptConfigSync(): PromptConfig {
+  if (cachedPromptConfig) return cachedPromptConfig;
+
+  try {
+    const configPath = path.join(process.cwd(), "public", "ai-chatbot-blog.yaml");
+    const raw = readFileSync(configPath, "utf-8");
+    const parsed = YAML.parse(raw) as { PROMPTS?: PromptConfig };
+    cachedPromptConfig = parsed?.PROMPTS || {};
+    return cachedPromptConfig;
+  } catch {
+    cachedPromptConfig = {};
+    return cachedPromptConfig;
+  }
+}
+
+const promptConfig = loadPromptConfigSync();
+
+export const blogPrompt = promptConfig.blogPrompt || defaultBlogPrompt;
+export const artifactsPrompt =
+  promptConfig.artifactsPrompt || defaultArtifactsPrompt;
+export const regularPrompt = promptConfig.regularPrompt || defaultRegularPrompt;
 
 export type RequestHints = {
   latitude: Geo["latitude"];

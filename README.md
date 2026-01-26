@@ -22,17 +22,40 @@ Template for a chat-first portfolio. It starts from vercel/ai-chatbot and adds a
 ![Context example](public/images/demo-context-example.png)
 ![Private context](public/images/demo-context-private.png)
 
-## Local setup
+## Running locally
 
-1. Install dependencies
-2. Configure `.env.local` using [.env.example](.env.example)
-3. Run DB migration and dev server
+You will need to use the environment variables defined in [.env.example](.env.example) to run Next.js AI Chatbot. It’s recommended you use Vercel Environment Variables for this, but a local .env file is all that is necessary.
+
+Note: Do not commit your .env file. It contains secrets that grant access to AI and authentication providers.
+
+### Use Vercel Environment Variables (recommended)
+
+1. Install Vercel CLI
+2. Link local instance with Vercel and GitHub accounts (creates a .vercel directory)
+3. Download your environment variables (creates .env.local automatically)
+4. Install dependencies and run
 
 ```bash
+npm i -g vercel
+vercel link
+vercel env pull
 pnpm install
 pnpm db:migrate
 pnpm dev
 ```
+
+Your app template should now be running on localhost:3000.
+
+### Environment variables (detailed)
+
+- `AUTH_SECRET` — Random secret used to sign Auth.js session cookies.
+	- Generate using https://generate-secret.vercel.app/32 or `openssl rand -base64 32`.
+- `AI_GATEWAY_API_KEY` — Vercel AI Gateway key for non-Vercel deployments.
+	- On Vercel, OIDC tokens are used automatically and this is optional.
+- `BLOB_READ_WRITE_TOKEN` — Vercel Blob token for file uploads and artifact storage.
+- `OPENAI_API_KEY` — Required for embeddings and RAG sync.
+- `POSTGRES_URL` — PostgreSQL connection string (pgvector required).
+- `REDIS_URL` — Optional. Used for resumable streams.
 
 ## Content
 

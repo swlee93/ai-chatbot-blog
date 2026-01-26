@@ -135,7 +135,9 @@ export function chunkBlogContent(content: BlogContent): ContentChunk[] {
 
   // Chunk all markdown files dynamically
   for (const [fileName, fileContent] of Object.entries(content.files)) {
-    chunks.push(...chunkByMarkdownHeaders(fileContent, `content/${fileName}.md`));
+    chunks.push(
+      ...chunkByMarkdownHeaders(fileContent, `content/${fileName}.md`),
+    );
   }
 
   return chunks;

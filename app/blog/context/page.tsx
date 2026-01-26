@@ -93,10 +93,13 @@ export default function ContextPage() {
         console.log('📊 Client - Items:', data.items.map((i: ContextItem) => i.id));
         
         statsData?.stats?.forEach((stat: FileStats) => {
-          // Extract filename: "content/profile.md" -> "profile"
-          const fileName = stat.filePath.split('/').pop()?.replace('.md', '') || '';
-          console.log(`📊 Mapping: ${stat.filePath} -> ${fileName} (${stat.hitCount} hits)`);
-          statsMap.set(fileName, (statsMap.get(fileName) || 0) + stat.hitCount);
+          // Extract relative path: "content/metrics-meta/foo.md" -> "metrics-meta/foo"
+          const relativePath = stat.filePath
+            .replace(/^content\//, '')
+            .replace(/\.md$/, '');
+          const slug = relativePath.split('/').join('__');
+          console.log(`📊 Mapping: ${stat.filePath} -> ${slug} (${stat.hitCount} hits)`);
+          statsMap.set(slug, (statsMap.get(slug) || 0) + stat.hitCount);
         });
         
         console.log('📊 Final statsMap:', Array.from(statsMap.entries()));

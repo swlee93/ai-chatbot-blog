@@ -107,7 +107,13 @@ type PromptConfig = {
   regularPrompt?: string;
 };
 
+type ResponseConfig = {
+  minTokens?: number;
+  maxTokens?: number;
+};
+
 let cachedPromptConfig: PromptConfig | null = null;
+let cachedResponseConfig: ResponseConfig | null = null;
 
 function loadPromptConfigSync(): PromptConfig {
   if (cachedPromptConfig) return cachedPromptConfig;
@@ -115,11 +121,16 @@ function loadPromptConfigSync(): PromptConfig {
   try {
     const configPath = path.join(process.cwd(), "public", "ai-chatbot-blog.yaml");
     const raw = readFileSync(configPath, "utf-8");
-    const parsed = YAML.parse(raw) as { PROMPTS?: PromptConfig };
+    const parsed = YAML.parse(raw) as {
+      PROMPTS?: PromptConfig;
+      RESPONSE_CONFIG?: ResponseConfig;
+    };
     cachedPromptConfig = parsed?.PROMPTS || {};
+    cachedResponseConfig = parsed?.RESPONSE_CONFIG || {};
     return cachedPromptConfig;
   } catch {
     cachedPromptConfig = {};
+    cachedResponseConfig = {};
     return cachedPromptConfig;
   }
 }
@@ -130,6 +141,17 @@ export const blogPrompt = promptConfig.blogPrompt || defaultBlogPrompt;
 export const artifactsPrompt =
   promptConfig.artifactsPrompt || defaultArtifactsPrompt;
 export const regularPrompt = promptConfig.regularPrompt || defaultRegularPrompt;
+
+export const getResponseTokenLimits = () => {
+  if (!cachedResponseConfig) {
+    loadPromptConfigSync();
+  }
+
+  return {
+    minTokens: cachedResponseConfig?.minTokens,
+    maxTokens: cachedResponseConfig?.maxTokens,
+  };
+};
 
 export type RequestHints = {
   latitude: Geo["latitude"];
@@ -156,9 +178,22 @@ export const systemPrompt = ({
   blogContext?: string;
 }) => {
   const requestPrompt = getRequestPromptFromHints(requestHints);
+  const { minTokens, maxTokens } = getResponseTokenLimits();
+  const lengthGuidance =
+    minTokens || maxTokens
+      ? `\n\n## Response Length Guidelines\n${
+          minTokens
+            ? `- Aim for at least ${minTokens} tokens for adequate depth.\n`
+            : ""
+        }${
+          maxTokens
+            ? `- Do not exceed ${maxTokens} tokens unless explicitly asked.\n`
+            : ""
+        }`
+      : "";
   
   // Build the full system prompt with blog context
-  let prompt = regularPrompt;
+  let prompt = `${regularPrompt}${lengthGuidance}`;
   
   // Add blog context if provided - THIS TAKES PRIORITY
   if (blogContext) {
@@ -176,7 +211,7 @@ ${blogContext}
 When users ask about the developer (e.g., "about the developer", "your experience", "tell me about yourself"), 
 you MUST immediately use the blog information above. This is NOT a general knowledge question - you are representing THIS SPECIFIC PERSON.
 
-${regularPrompt}`;
+${regularPrompt}${lengthGuidance}`;
   }
 
   // reasoning models don't need artifacts prompt (they can't use tools)

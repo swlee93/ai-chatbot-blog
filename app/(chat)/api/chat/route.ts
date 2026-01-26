@@ -1,6 +1,10 @@
 import { auth, type UserType } from "@/app/(auth)/auth";
 import { entitlementsByUserType } from "@/lib/ai/entitlements";
-import { type RequestHints, systemPrompt } from "@/lib/ai/prompts";
+import {
+  getResponseTokenLimits,
+  type RequestHints,
+  systemPrompt,
+} from "@/lib/ai/prompts";
 import { getLanguageModel } from "@/lib/ai/providers";
 import { createDocument } from "@/lib/ai/tools/create-document";
 import { getWeather } from "@/lib/ai/tools/get-weather";
@@ -194,6 +198,7 @@ export async function POST(request: Request) {
         const isReasoningModel =
           selectedChatModel.includes("reasoning") ||
           selectedChatModel.includes("thinking");
+        const { maxTokens } = getResponseTokenLimits();
 
         const result = streamText({
           model: getLanguageModel(selectedChatModel),
@@ -204,6 +209,7 @@ export async function POST(request: Request) {
           }),
           messages: await convertToModelMessages(uiMessages),
           stopWhen: stepCountIs(5),
+          maxTokens: maxTokens ?? undefined,
           experimental_activeTools: isReasoningModel
             ? []
             : [

@@ -40,6 +40,12 @@ BLOG_CONFIG:
   # Default topK for semantic search
   ragTopK: 8
 
+RESPONSE_CONFIG:
+  # Minimum tokens for assistant answers (soft constraint via prompt)
+  minTokens: 120
+  # Maximum tokens for assistant answers (hard constraint via model)
+  maxTokens: 600
+
 PROMPTS:
   # System prompt for blog context
   blogPrompt: |

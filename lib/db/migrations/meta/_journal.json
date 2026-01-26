@@ -78,6 +78,13 @@
       "when": 1769239365700,
       "tag": "0010_legal_frightful_four",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1769990000000,
+      "tag": "0011_global_blog_chunks",
+      "breakpoints": true
     }
   ]
 }

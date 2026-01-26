@@ -12,21 +12,21 @@
  */
 
 import { config } from 'dotenv';
-import { eq, sql } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import {
-  estimateTokens,
-  formatSize,
-  loadBlogContent,
-  shouldUseRAG,
+    estimateTokens,
+    formatSize,
+    loadBlogContent,
+    shouldUseRAG,
 } from '../lib/blog/content';
 import {
-  chunkBlogContent,
-  generateEmbeddings,
-  getChunkStats,
+    chunkBlogContent,
+    generateEmbeddings,
+    getChunkStats,
 } from '../lib/blog/embeddings';
-import { blogChunk, user } from '../lib/db/schema';
+import { blogChunk } from '../lib/db/schema';
 
 // Load environment variables
 config({ path: '.env.local' });
@@ -38,32 +38,7 @@ const db = drizzle(client);
 async function main() {
   console.log('🚀 Starting RAG synchronization...\n');
 
-  // Parse command line arguments
-  const args = process.argv.slice(2);
-  const userIdArg = args.find((arg) => arg.startsWith('--user-id='));
-  let userId: string;
-
-  if (userIdArg) {
-    userId = userIdArg.split('=')[1];
-    console.log(`📌 Using provided user ID: ${userId}`);
-  } else {
-    // Get the first user from the database (or create a system user)
-    console.log('🔍 Finding blog owner user...');
-    const users = await db.select().from(user).limit(1);
-
-    if (users.length === 0) {
-      console.log('ℹ️  No users found. Creating a system user for RAG sync...');
-      const created = await db
-        .insert(user)
-        .values({ email: 'system@local', password: null })
-        .returning({ id: user.id, email: user.email });
-      userId = created[0].id;
-      console.log(`✅ Created system user: ${userId} (${created[0].email})`);
-    } else {
-      userId = users[0].id;
-      console.log(`✅ Using first user: ${userId} (${users[0].email})`);
-    }
-  }
+  console.log('📌 RAG sync will store global chunks (userId is not used).');
 
   // Load blog content
   console.log('\n📖 Loading blog content...');
@@ -117,11 +92,9 @@ async function main() {
     console.log('   Continuing without index optimization...');
   }
 
-  // Delete existing chunks for this user
+  // Delete existing chunks
   console.log('\n🗑️  Removing old chunks...');
-  const deleteResult = await db
-    .delete(blogChunk)
-    .where(eq(blogChunk.userId, userId));
+  const deleteResult = await db.delete(blogChunk);
   console.log(`   ✅ Removed old chunks`);
 
   // Chunk the content
@@ -151,7 +124,6 @@ async function main() {
     const { chunk, embedding } = embeddedChunks[i];
     
     await db.insert(blogChunk).values({
-      userId,
       content: chunk.content,
       embedding: embedding as number[], // pgvector expects number array
       metadata: chunk.metadata,
@@ -170,14 +142,12 @@ async function main() {
   console.log('\n🔍 Verifying stored data...');
   const verifyResult = await db
     .select({ count: sql<number>`count(*)` })
-    .from(blogChunk)
-    .where(eq(blogChunk.userId, userId));
+    .from(blogChunk);
 
   console.log(`   ✅ Found ${verifyResult[0].count} chunks in database`);
 
   console.log('\n✨ RAG synchronization completed successfully!\n');
   console.log('📊 Summary:');
-  console.log(`   - User ID: ${userId}`);
   console.log(`   - Total chunks: ${stats.totalChunks}`);
   console.log(`   - Total size: ${stats.sizeKB} KB`);
   console.log(`   - Estimated tokens: ${stats.estimatedTokens}`);

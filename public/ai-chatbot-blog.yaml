@@ -37,6 +37,8 @@ BLOG_CONFIG:
   contentDir: "content"
   # RAG threshold in KB (content size above this enables RAG)
   sizeThresholdKB: 200
+  # Default topK for semantic search
+  ragTopK: 8
 
 PROMPTS:
   # System prompt for blog context

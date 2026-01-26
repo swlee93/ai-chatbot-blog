@@ -174,9 +174,7 @@ export type Stream = InferSelectModel<typeof stream>;
 // Enable pgvector extension: CREATE EXTENSION IF NOT EXISTS vector;
 export const blogChunk = pgTable("BlogChunk", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
-  userId: uuid("userId")
-    .notNull()
-    .references(() => user.id),
+  userId: uuid("userId").references(() => user.id),
   content: text("content").notNull(),
   embedding: vector("embedding", { dimensions: 1536 }), // OpenAI text-embedding-3-small
   metadata: json("metadata").$type<{

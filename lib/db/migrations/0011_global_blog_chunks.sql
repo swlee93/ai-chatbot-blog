@@ -1,0 +1,1 @@
+ALTER TABLE "BlogChunk" ALTER COLUMN "userId" DROP NOT NULL;

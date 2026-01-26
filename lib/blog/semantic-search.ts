@@ -1,15 +1,17 @@
 import { blogChunk } from '@/lib/db/schema';
 import { openai } from '@ai-sdk/openai';
 import { embed } from 'ai';
-import { desc, eq, sql } from 'drizzle-orm';
+import { desc, sql } from 'drizzle-orm';
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { drizzle } from 'drizzle-orm/postgres-js';
+import { readFileSync } from 'node:fs';
+import path from 'path';
 import postgres from 'postgres';
+import YAML from 'yaml';
 
 // Lazy connection - only create when needed
 let _client: ReturnType<typeof postgres> | null = null;
 let _db: PostgresJsDatabase | null = null;
-let _cachedUserId: string | null = null;
 
 function getDb() {
   if (!_db) {
@@ -23,31 +25,26 @@ function getDb() {
   return _db;
 }
 
-/**
- * Get the default blog owner's user ID
- * Caches the result to avoid repeated queries
- */
-async function getUserId(): Promise<string> {
-  if (_cachedUserId) {
-    return _cachedUserId;
-  }
+type RagConfig = {
+  ragTopK?: number;
+};
 
-  const db = getDb();
+let _cachedRagConfig: RagConfig | null = null;
+
+function getRagConfigSync(): RagConfig {
+  if (_cachedRagConfig) return _cachedRagConfig;
   try {
-    const result = await db.execute<{ id: string }>(
-      sql`SELECT id FROM "User" LIMIT 1`
-    );
-    const rows = Array.isArray(result) ? result : [];
-    if (rows.length === 0) {
-      throw new Error('No user found in database');
-    }
-    _cachedUserId = rows[0].id;
-    return _cachedUserId;
-  } catch (error) {
-    console.error('Error fetching user ID:', error);
-    throw error;
+    const configPath = path.join(process.cwd(), 'public', 'ai-chatbot-blog.yaml');
+    const raw = readFileSync(configPath, 'utf-8');
+    const parsed = YAML.parse(raw) as { BLOG_CONFIG?: RagConfig };
+    _cachedRagConfig = parsed?.BLOG_CONFIG || {};
+    return _cachedRagConfig;
+  } catch {
+    _cachedRagConfig = {};
+    return _cachedRagConfig;
   }
 }
+
 
 export interface SearchResult {
   content: string;
@@ -72,7 +69,8 @@ export async function semanticSearch(
   minSimilarity: number = 0.20
 ): Promise<SearchResult[]> {
   const db = getDb();
-  const userId = await getUserId();
+  const configTopK = getRagConfigSync().ragTopK;
+  const resolvedTopK = typeof configTopK === 'number' ? configTopK : topK;
   
   try {
     // Generate embedding for the query
@@ -96,13 +94,23 @@ export async function semanticSearch(
         metadata,
         1 - (embedding <=> ${embeddingString}::vector) AS similarity
       FROM "BlogChunk"
-      WHERE "userId" = ${userId}
-        AND (1 - (embedding <=> ${embeddingString}::vector)) >= ${minSimilarity}
+      WHERE (1 - (embedding <=> ${embeddingString}::vector)) >= ${minSimilarity}
       ORDER BY embedding <=> ${embeddingString}::vector
-      LIMIT ${topK}
+      LIMIT ${resolvedTopK}
     `);
 
     const rows = Array.isArray(results) ? results : [];
+    if (rows.length > 0) {
+      const summary = rows.map((row) => ({
+        similarity: Number(row.similarity),
+        filePath: row.metadata.filePath,
+        section: row.metadata.section,
+        title: row.metadata.title,
+      }));
+      console.log('🔍 RAG similarity results:', summary);
+    } else {
+      console.log('🔍 RAG similarity results: no matches');
+    }
     return rows.map((row) => ({
       content: row.content,
       similarity: Number(row.similarity),
@@ -122,11 +130,9 @@ export async function isRAGAvailable(): Promise<boolean> {
   const db = getDb();
   
   try {
-    const userId = await getUserId();
     const result = await db
       .select({ count: sql<number>`count(*)` })
       .from(blogChunk)
-      .where(eq(blogChunk.userId, userId))
       .limit(1);
 
     return result.length > 0 && Number(result[0].count) > 0;
@@ -143,7 +149,6 @@ export async function getAllChunks() {
   const db = getDb();
   
   try {
-    const userId = await getUserId();
     return await db
       .select({
         id: blogChunk.id,
@@ -152,7 +157,6 @@ export async function getAllChunks() {
         createdAt: blogChunk.createdAt,
       })
       .from(blogChunk)
-      .where(eq(blogChunk.userId, userId))
       .orderBy(desc(blogChunk.createdAt));
   } catch (error) {
     console.error('Error fetching chunks:', error);

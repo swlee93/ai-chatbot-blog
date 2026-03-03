@@ -4,7 +4,8 @@ import type { ChatMessage } from "@/lib/types";
 import { cn, sanitizeText } from "@/lib/utils";
 import type { UseChatHelpers } from "@ai-sdk/react";
 import equal from "fast-deep-equal";
-import { memo, useEffect, useState } from "react";
+import { memo, useState } from "react";
+import { BlogSources } from "./blog-sources";
 import { useDataStream } from "./data-stream-provider";
 import { DocumentToolResult } from "./document";
 import { DocumentPreview } from "./document-preview";
@@ -34,6 +35,7 @@ const PurePreviewMessage = ({
   regenerate,
   isReadonly,
   requiresScrollPadding: _requiresScrollPadding,
+  showBlogSources = false,
 }: {
   addToolApprovalResponse: UseChatHelpers<ChatMessage>["addToolApprovalResponse"];
   chatId: string;
@@ -44,8 +46,10 @@ const PurePreviewMessage = ({
   regenerate: UseChatHelpers<ChatMessage>["regenerate"];
   isReadonly: boolean;
   requiresScrollPadding: boolean;
+  showBlogSources?: boolean;
 }) => {
   const [mode, setMode] = useState<"view" | "edit">("view");
+  const { blogSources } = useDataStream();
 
   const attachmentsFromMessage = message.parts.filter(
     (part) => part.type === "file"
@@ -120,7 +124,11 @@ const PurePreviewMessage = ({
             if (type === "text") {
               if (mode === "view") {
                 const hasContent = part.text?.trim().length > 0;
-                
+                const isLastTextPart =
+                  message.parts
+                    ?.filter((p) => p.type === "text")
+                    .pop() === part;
+
                 return (
                   <div key={key}>
                     {!hasContent && isLoading ? (
@@ -130,22 +138,34 @@ const PurePreviewMessage = ({
                         <div className="h-4 w-2/3 animate-pulse rounded-md bg-muted [animation-delay:150ms]" />
                       </div>
                     ) : (
-                      <MessageContent
-                        className={cn({
-                          "wrap-break-word w-fit rounded-2xl px-3 py-2 text-right text-white":
-                            message.role === "user",
-                          "bg-transparent px-0 py-0 text-left":
-                            message.role === "assistant",
-                        })}
-                        data-testid="message-content"
-                        style={
-                          message.role === "user"
-                            ? { backgroundColor: "#006cff" }
-                            : undefined
-                        }
-                      >
-                        <Response>{sanitizeText(part.text)}</Response>
-                      </MessageContent>
+                      <>
+                        <MessageContent
+                          className={cn({
+                            "wrap-break-word w-fit rounded-2xl px-3 py-2 text-right text-white":
+                              message.role === "user",
+                            "bg-transparent px-0 py-0 text-left":
+                              message.role === "assistant",
+                          })}
+                          data-testid="message-content"
+                          style={
+                            message.role === "user"
+                              ? { backgroundColor: "#006cff" }
+                              : undefined
+                          }
+                        >
+                          <Response>{sanitizeText(part.text)}</Response>
+                        </MessageContent>
+                        {/* Show blog sources for the last assistant message */}
+                        {message.role === "assistant" &&
+                          isLastTextPart &&
+                          !isLoading &&
+                          showBlogSources &&
+                          blogSources.length > 0 && (
+                            <div className="mt-3">
+                              <BlogSources sources={blogSources} />
+                            </div>
+                          )}
+                      </>
                     )}
                   </div>
                 );
@@ -373,6 +393,7 @@ export const PreviewMessage = memo(
       prevProps.isLoading === nextProps.isLoading &&
       prevProps.message.id === nextProps.message.id &&
       prevProps.requiresScrollPadding === nextProps.requiresScrollPadding &&
+      prevProps.showBlogSources === nextProps.showBlogSources &&
       equal(prevProps.message.parts, nextProps.message.parts) &&
       equal(prevProps.vote, nextProps.vote)
     ) {

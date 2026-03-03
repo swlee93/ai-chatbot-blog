@@ -9,10 +9,11 @@ import { useDataStream } from "./data-stream-provider";
 import { getChatHistoryPaginationKey } from "./sidebar-history";
 
 export function DataStreamHandler() {
-  const { dataStream, setDataStream } = useDataStream();
+  const { dataStream, setDataStream, setBlogSources } = useDataStream();
   const { mutate } = useSWRConfig();
 
   const { artifact, setArtifact, setMetadata } = useArtifact();
+
 
   useEffect(() => {
     if (!dataStream?.length) {
@@ -26,6 +27,12 @@ export function DataStreamHandler() {
       // Handle chat title updates
       if (delta.type === "data-chat-title") {
         mutate(unstable_serialize(getChatHistoryPaginationKey));
+        continue;
+      }
+
+      // Handle blog sources - save to separate state
+      if (delta.type === "data-blog-sources") {
+        setBlogSources(delta.data);
         continue;
       }
       const artifactDefinition = artifactDefinitions.find(

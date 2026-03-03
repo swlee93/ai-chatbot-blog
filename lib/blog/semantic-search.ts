@@ -1,13 +1,14 @@
-import { blogChunk } from '@/lib/db/schema';
-import { openai } from '@ai-sdk/openai';
-import { embed } from 'ai';
-import { desc, sql } from 'drizzle-orm';
-import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { drizzle } from 'drizzle-orm/postgres-js';
-import { readFileSync } from 'node:fs';
-import path from 'path';
-import postgres from 'postgres';
-import YAML from 'yaml';
+import { blogChunk } from "@/lib/db/schema";
+import { gateway } from "@ai-sdk/gateway";
+import { openai } from "@ai-sdk/openai";
+import { embed } from "ai";
+import { desc, sql } from "drizzle-orm";
+import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import { drizzle } from "drizzle-orm/postgres-js";
+import { readFileSync } from "node:fs";
+import path from "path";
+import postgres from "postgres";
+import YAML from "yaml";
 
 // Lazy connection - only create when needed
 let _client: ReturnType<typeof postgres> | null = null;
@@ -34,8 +35,12 @@ let _cachedRagConfig: RagConfig | null = null;
 function getRagConfigSync(): RagConfig {
   if (_cachedRagConfig) return _cachedRagConfig;
   try {
-    const configPath = path.join(process.cwd(), 'public', 'ai-chatbot-blog.yaml');
-    const raw = readFileSync(configPath, 'utf-8');
+    const configPath = path.join(
+      process.cwd(),
+      "public",
+      "ai-chatbot-blog.yaml",
+    );
+    const raw = readFileSync(configPath, "utf-8");
     const parsed = YAML.parse(raw) as { BLOG_CONFIG?: RagConfig };
     _cachedRagConfig = parsed?.BLOG_CONFIG || {};
     return _cachedRagConfig;
@@ -44,7 +49,6 @@ function getRagConfigSync(): RagConfig {
     return _cachedRagConfig;
   }
 }
-
 
 export interface SearchResult {
   content: string;
@@ -66,21 +70,35 @@ export interface SearchResult {
 export async function semanticSearch(
   query: string,
   topK: number = 5,
-  minSimilarity: number = 0.20
+  minSimilarity: number = 0.2,
 ): Promise<SearchResult[]> {
   const db = getDb();
   const configTopK = getRagConfigSync().ragTopK;
-  const resolvedTopK = typeof configTopK === 'number' ? configTopK : topK;
-  
+  const resolvedTopK = typeof configTopK === "number" ? configTopK : topK;
+  const startedAt = Date.now();
+  console.log("🔍 RAG search start", {
+    query,
+    resolvedTopK,
+    minSimilarity,
+  });
+
   try {
     // Generate embedding for the query
+    // Use OpenAI directly if API key is set, otherwise use AI Gateway
+    const embeddingModel = process.env.OPENAI_API_KEY
+      ? openai.embedding("text-embedding-3-small")
+      : gateway.embeddingModel("openai/text-embedding-3-small");
+
     const { embedding } = await embed({
-      model: openai.embedding('text-embedding-3-small'),
+      model: embeddingModel,
       value: query,
     });
 
     const embeddingArray = Array.from(embedding);
-    const embeddingString = `[${embeddingArray.join(',')}]`;
+    const embeddingString = `[${embeddingArray.join(",")}]`;
+    console.log("🔍 RAG embedding ready", {
+      dimensions: embeddingArray.length,
+    });
 
     // Perform vector similarity search using cosine distance
     // The <=> operator computes cosine distance (1 - cosine similarity)
@@ -100,6 +118,7 @@ export async function semanticSearch(
     `);
 
     const rows = Array.isArray(results) ? results : [];
+    const durationMs = Date.now() - startedAt;
     if (rows.length > 0) {
       const summary = rows.map((row) => ({
         similarity: Number(row.similarity),
@@ -107,9 +126,18 @@ export async function semanticSearch(
         section: row.metadata.section,
         title: row.metadata.title,
       }));
-      console.log('🔍 RAG similarity results:', summary);
+      console.log("🔍 RAG similarity results:", summary);
+      console.log("🔍 RAG search complete", {
+        durationMs,
+        count: rows.length,
+        topSimilarity: Number(rows[0].similarity),
+      });
     } else {
-      console.log('🔍 RAG similarity results: no matches');
+      console.log("🔍 RAG similarity results: no matches");
+      console.log("🔍 RAG search complete", {
+        durationMs,
+        count: 0,
+      });
     }
     return rows.map((row) => ({
       content: row.content,
@@ -117,7 +145,7 @@ export async function semanticSearch(
       metadata: row.metadata,
     }));
   } catch (error) {
-    console.error('Error performing semantic search:', error);
+    console.error("Error performing semantic search:", error);
     // If vector search fails (e.g., table doesn't exist), return empty results
     return [];
   }
@@ -128,7 +156,7 @@ export async function semanticSearch(
  */
 export async function isRAGAvailable(): Promise<boolean> {
   const db = getDb();
-  
+
   try {
     const result = await db
       .select({ count: sql<number>`count(*)` })
@@ -147,7 +175,7 @@ export async function isRAGAvailable(): Promise<boolean> {
  */
 export async function getAllChunks() {
   const db = getDb();
-  
+
   try {
     return await db
       .select({
@@ -159,7 +187,7 @@ export async function getAllChunks() {
       .from(blogChunk)
       .orderBy(desc(blogChunk.createdAt));
   } catch (error) {
-    console.error('Error fetching chunks:', error);
+    console.error("Error fetching chunks:", error);
     return [];
   }
 }
@@ -169,15 +197,15 @@ export async function getAllChunks() {
  */
 export function buildContextFromSearchResults(results: SearchResult[]): string {
   if (results.length === 0) {
-    return '';
+    return "";
   }
 
   return results
     .map((result, index) => {
-      return `## Relevant Context ${index + 1} (Similarity: ${(result.similarity * 100).toFixed(1)}%)
-Source: ${result.metadata.filePath}${result.metadata.title ? ` - ${result.metadata.title}` : ''}
+      const title = result.metadata.title || `Context ${index + 1}`;
+      return `## ${title}
 
 ${result.content}`;
     })
-    .join('\n\n---\n\n');
+    .join("\n\n---\n\n");
 }

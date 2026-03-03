@@ -29,6 +29,12 @@ export type ChatTools = {
   requestSuggestions: requestSuggestionsTool;
 };
 
+export type BlogSource = {
+  filePath: string;
+  title?: string;
+  section?: string;
+};
+
 export type CustomUIDataTypes = {
   textDelta: string;
   imageDelta: string;
@@ -42,6 +48,7 @@ export type CustomUIDataTypes = {
   clear: null;
   finish: null;
   "chat-title": string;
+  "blog-sources": BlogSource[];
 };
 
 export type ChatMessage = UIMessage<

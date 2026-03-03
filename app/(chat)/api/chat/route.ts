@@ -179,7 +179,6 @@ export async function POST(request: Request) {
       blogContext = context;
       blogSources = sources;
       
-      console.log('🔍 Blog sources:', JSON.stringify(blogSources, null, 2));
     }
 
     const stream = createUIMessageStream({
@@ -192,6 +191,11 @@ export async function POST(request: Request) {
             updateChatTitleById({ chatId: id, title });
             dataStream.write({ type: "data-chat-title", data: title });
           });
+        }
+
+        // Send blog sources to client
+        if (blogSources && blogSources.length > 0) {
+          dataStream.write({ type: "data-blog-sources", data: blogSources });
         }
 
         const isReasoningModel =
